@@ -1,15 +1,31 @@
-CREATE TABLE IF NOT EXISTS products (
+CREATE DATABASE IF NOT EXISTS tp_ids;
+USE tp_ids;
+
+CREATE TABLE IF NOT EXISTS partidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    price FLOAT NOT NULL
+
+    equipo_local VARCHAR(100) NOT NULL,
+    equipo_visitante VARCHAR(100) NOT NULL,
+
+    estadio VARCHAR(100),
+    ciudad VARCHAR(100),
+
+    fecha DATE NOT NULL,
+    fase VARCHAR(50) NOT NULL,
+
+    goles_local INT DEFAULT NULL,
+    goles_visitante INT DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS carts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-INSERT INTO products (name, price) VALUES
-('Notebook', 1200.50),
-('Mouse', 25.99),
-('Teclado', 45.00);
+INSERT INTO partidos (
+    equipo_local,
+    equipo_visitante,
+    estadio,
+    ciudad,
+    fecha,
+    fase
+) VALUES
+('Argentina', 'Brasil', 'Monumental', 'Buenos Aires', '2026-06-12', 'Fase de grupos'),
+('Francia', 'Alemania', 'Stade de France', 'París', '2026-06-13', 'Fase de grupos'),
+('España', 'Italia', 'Bernabéu', 'Madrid', '2026-06-14', 'Fase de grupos'),
+('Inglaterra', 'Portugal', 'Wembley', 'Londres', '2026-06-15', 'Fase de grupos');

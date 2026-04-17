@@ -1,36 +1,34 @@
 import pymysql
 
-def get_connection(database=None):
-    return pymysql.connect(
+
+# =====================================================
+# INICIALIZAR BASE DE DATOS DESDE ARCHIVO SQL
+# =====================================================
+
+def init_db():
+    # conexión sin base de datos (para poder crearla)
+    conn = pymysql.connect(
         host="localhost",
         user="root",
         password="TU_PASSWORD",
-        database=database,
         autocommit=True
     )
 
-
-def init_db():
-    conn = get_connection()
     cursor = conn.cursor()
 
-    # 1. crear DB si no existe
-    cursor.execute("CREATE DATABASE IF NOT EXISTS tp_ids")
-
-    # 2. conectar a la DB
-    conn.select_db("tp_ids")
-
-    # 3. leer archivo SQL
+    # =================================================
+    # LEER Y EJECUTAR ARCHIVO SQL
+    # =================================================
     with open("database/database.sql", "r", encoding="utf-8") as file:
         sql_script = file.read()
 
-    # 4. ejecutar statements
+    # separar sentencias
     statements = sql_script.split(";")
 
-    for stmt in statements:
-        stmt = stmt.strip()
-        if stmt:
-            cursor.execute(stmt)
+    for statement in statements:
+        statement = statement.strip()
+        if statement:
+            cursor.execute(statement)
 
     cursor.close()
     conn.close()
