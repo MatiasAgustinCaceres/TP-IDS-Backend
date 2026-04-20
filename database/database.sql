@@ -63,16 +63,16 @@ CREATE TABLE IF NOT EXISTS predicciones (
 -- =====================================================
 
 INSERT INTO partidos (equipo_local, equipo_visitante, estadio, ciudad, fecha, fase, goles_local, goles_visitante) VALUES
-('Argentina', 'Brasil', 'Monumental', 'Buenos Aires', '2026-06-10', 'Grupos', NULL, NULL),
-('Francia', 'Alemania', 'Stade de France', 'Paris', '2026-06-11', 'Grupos', NULL, NULL),
-('España', 'Italia', 'Bernabeu', 'Madrid', '2026-06-12', 'Grupos', NULL, NULL),
-('Inglaterra', 'Portugal', 'Wembley', 'Londres', '2026-06-13', 'Grupos', NULL, NULL),
-('Uruguay', 'Chile', 'Centenario', 'Montevideo', '2026-06-14', 'Grupos', NULL, NULL),
-('Mexico', 'USA', 'Azteca', 'CDMX', '2026-06-15', 'Grupos', NULL, NULL),
-('Brasil', 'España', 'Maracaná', 'Rio', '2026-06-16', 'Octavos', NULL, NULL),
-('Argentina', 'Francia', 'Monumental', 'Buenos Aires', '2026-06-17', 'Octavos', NULL, NULL),
-('Alemania', 'Italia', 'Olympiastadion', 'Berlin', '2026-06-18', 'Octavos', NULL, NULL),
-('Portugal', 'Inglaterra', 'Da Luz', 'Lisboa', '2026-06-19', 'Octavos', NULL, NULL);
+('Argentina', 'Brasil', 'Monumental', 'Buenos Aires', '2026-06-10', 'Grupos', 3, 2),
+('Francia', 'Alemania', 'Stade de France', 'Paris', '2026-06-11', 'Grupos', 1, 2),
+('España', 'Italia', 'Bernabeu', 'Madrid', '2026-06-12', 'Grupos', 1, 2),
+('Inglaterra', 'Portugal', 'Wembley', 'Londres', '2026-06-13', 'Grupos', 2, 1),
+('Uruguay', 'Chile', 'Centenario', 'Montevideo', '2026-06-14', 'Grupos', 2, 1),
+('Mexico', 'USA', 'Azteca', 'CDMX', '2026-06-15', 'Grupos', 2, 1),
+('Brasil', 'España', 'Maracaná', 'Rio', '2026-06-16', 'Octavos', 2, 1),
+('Argentina', 'Francia', 'Monumental', 'Buenos Aires', '2026-06-17', 'Octavos', 2, 1),
+('Alemania', 'Italia', 'Olympiastadion', 'Berlin', '2026-06-18', 'Octavos', 2, 1),
+('Portugal', 'Inglaterra', 'Da Luz', 'Lisboa', '2026-06-19', 'Octavos', 2, 1);
 
 -- =====================================================
 -- INSERTAR USUARIOS (2)

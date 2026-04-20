@@ -37,7 +37,7 @@ def get_partidos(filtros, limit, offset):
 
 
 # =====================================================
-# VERIFICAR DUPLICADO
+# VERIFICAR PARTIDO DUPLICADO
 # =====================================================
 
 def get_partido_existente(data):
@@ -64,7 +64,7 @@ def get_partido_existente(data):
 
 
 # =====================================================
-# CREATE PARTIDO
+# CREAR PARTIDO
 # =====================================================
 
 def create_partido(data):
@@ -94,7 +94,7 @@ def create_partido(data):
 
 
 # =====================================================
-# GET BY ID
+# OBTENER PARTIDO POR ID
 # =====================================================
 
 def get_partido_by_id(partido_id):
@@ -111,7 +111,7 @@ def get_partido_by_id(partido_id):
 
 
 # =====================================================
-# PUT (REEMPLAZO TOTAL)
+# REEMPLAZAR PARTIDO (PUT)
 # =====================================================
 
 def replace_partido(partido_id, data):
@@ -142,7 +142,7 @@ def replace_partido(partido_id, data):
 
 
 # =====================================================
-# PATCH (PARCIAL)
+# ACTUALIZAR PARCIALMENTE PARTIDO (PATCH)
 # =====================================================
 
 def patch_partido(partido_id, data):
@@ -168,7 +168,7 @@ def patch_partido(partido_id, data):
 
 
 # =====================================================
-# DELETE
+# ELIMINAR PARTIDO
 # =====================================================
 
 def delete_partido(partido_id):
@@ -182,7 +182,7 @@ def delete_partido(partido_id):
 
 
 # =====================================================
-# RESULTADO PARTIDO
+# ACTUALIZAR RESULTADO DE PARTIDO
 # =====================================================
 
 def update_resultado(partido_id, data):
@@ -202,3 +202,199 @@ def update_resultado(partido_id, data):
 
     cursor.close()
     conn.close()
+
+
+# =====================================================
+# LISTAR USUARIOS
+# =====================================================
+
+def get_usuarios(limit, offset):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM usuarios LIMIT %s OFFSET %s",
+        (limit, offset)
+    )
+
+    result = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return result
+
+
+# =====================================================
+# OBTENER USUARIO POR ID
+# =====================================================
+
+def get_usuario_by_id(usuario_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM usuarios WHERE id = %s", (usuario_id,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return result
+
+
+# =====================================================
+# OBTENER USUARIO POR EMAIL
+# =====================================================
+
+def get_usuario_by_email(email):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return result
+
+
+# =====================================================
+# CREAR USUARIO
+# =====================================================
+
+def create_usuario(data):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO usuarios (nombre, email)
+        VALUES (%s, %s)
+    """, (data["nombre"], data["email"]))
+
+    cursor.close()
+    conn.close()
+
+
+# =====================================================
+# REEMPLAZAR USUARIO (PUT)
+# =====================================================
+
+def replace_usuario(usuario_id, data):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET nombre = %s,
+            email = %s
+        WHERE id = %s
+    """, (data["nombre"], data["email"], usuario_id))
+
+    cursor.close()
+    conn.close()
+
+
+# =====================================================
+# ELIMINAR USUARIO
+# =====================================================
+
+def delete_usuario(usuario_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM usuarios WHERE id = %s", (usuario_id,))
+
+    cursor.close()
+    conn.close()
+
+
+# =====================================================
+# VERIFICAR PREDICCION EXISTENTE
+# =====================================================
+
+def get_prediccion_existente(usuario_id, partido_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM predicciones
+        WHERE usuario_id = %s AND partido_id = %s
+    """, (usuario_id, partido_id))
+
+    result = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return result
+
+
+# =====================================================
+# CREAR PREDICCION
+# =====================================================
+
+def create_prediccion(usuario_id, partido_id, data):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO predicciones (
+            usuario_id,
+            partido_id,
+            goles_local,
+            goles_visitante
+        ) VALUES (%s, %s, %s, %s)
+    """, (
+        usuario_id,
+        partido_id,
+        data["goles_local"],
+        data["goles_visitante"]
+    ))
+
+    cursor.close()
+    conn.close()
+
+# =====================================================
+# OBTENER RANKING
+# =====================================================
+
+def get_ranking(limit, offset):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+        SELECT 
+            u.id AS usuario_id,
+            COALESCE(SUM(
+                CASE
+                    -- resultado exacto
+                    WHEN p.goles_local = pa.goles_local 
+                     AND p.goles_visitante = pa.goles_visitante THEN 3
+                    
+                    -- resultado correcto (ganador o empate)
+                    WHEN (
+                        (p.goles_local > p.goles_visitante AND pa.goles_local > pa.goles_visitante) OR
+                        (p.goles_local < p.goles_visitante AND pa.goles_local < pa.goles_visitante) OR
+                        (p.goles_local = p.goles_visitante AND pa.goles_local = pa.goles_visitante)
+                    ) THEN 1
+                    
+                    ELSE 0
+                END
+            ), 0) AS puntos
+        FROM usuarios u
+        LEFT JOIN predicciones p ON u.id = p.usuario_id
+        LEFT JOIN partidos pa ON pa.id = p.partido_id
+        WHERE pa.goles_local IS NOT NULL
+        GROUP BY u.id
+        ORDER BY puntos DESC
+        LIMIT %s OFFSET %s
+    """
+
+    cursor.execute(query, (limit, offset))
+    result = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return result
